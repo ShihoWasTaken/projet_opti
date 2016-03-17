@@ -14,6 +14,8 @@
     #include <iterator>
     #include <ctime>
 
+    #define SOLUTIONS 5
+
     using namespace std;
 
     class TwoObjectivesInstance
@@ -38,7 +40,7 @@
             void SetFile1Matrix(unsigned int** val) { m_File1Matrix = val; }
             unsigned int** GetFile2Matrix() { return m_File2Matrix; }
             void SetFile2Matrix(unsigned int** val) { m_File2Matrix = val; }
-            string generateSolution();
+            void generateSolution(int iteration, bool init);
             unsigned int* randomRoute(unsigned int dimension, int iteration, bool init);
         protected:
         private:
@@ -51,7 +53,7 @@
             string m_File1Path;
             string m_File2Path;
 
-            unsigned int m_seeds[500];
+            unsigned int m_seeds[SOLUTIONS];
             unsigned int m_File1Dimension;
             unsigned int m_File2Dimension;
             unsigned int **m_File1Matrix;

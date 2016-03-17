@@ -21,33 +21,12 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
         cout << filename2 << " possède " << this->m_File2Dimension << " villes"<< endl;
         exit(EXIT_FAILURE);
     }
-    unsigned int *itineraire;
-    itineraire = this->randomRoute(m_File1Dimension, 0, true);
-    cout << "L'itinéraire est: " << endl;
-    int a, b;
-    int total1 = 0;
-    int total2 = 0;
-    for(int i = 0; i < m_File1Dimension; i++)
+    // On génère 500 solutions
+    for(int i = 0; i < SOLUTIONS; i++)
     {
-        a = itineraire[i-1];
-        b = itineraire[i];
-        // Toutes les itérations sauf la première et la dernière
-        if( (i!=0) && (i !=(m_File1Dimension-1)) )
-        {
-            cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
-            total1 += this->m_File1Matrix[a-1][b-1];
-            total2 += this->m_File2Matrix[a-1][b-1];
-        }
-        // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
-        if(i == (m_File1Dimension-1))
-        {
-            cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
-            total1 += this->m_File1Matrix[a-1][0];
-            total2 += this->m_File2Matrix[a-1][0];
-        }
+        cout << endl << "Solution N°" << i+1 << endl;
+        this->generateSolution(i,true);
     }
-    cout << "Distance totale: " << total1 << " Km" << endl;
-    cout << "Coût total: " << total2 << " €" << endl;
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -139,9 +118,35 @@ float TwoObjectivesInstance::distanceBetweenCities(int x1, int y1, int x2, int y
     return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 }
 
-string TwoObjectivesInstance::generateSolution()
+void TwoObjectivesInstance::generateSolution(int iteration, bool init)
 {
-
+    unsigned int *itineraire;
+    itineraire = this->randomRoute(m_File1Dimension, iteration, init);
+    cout << "L'itinéraire est: " << endl;
+    int a, b;
+    int total1 = 0;
+    int total2 = 0;
+    for(int i = 0; i < m_File1Dimension; i++)
+    {
+        a = itineraire[i-1];
+        b = itineraire[i];
+        // Toutes les itérations sauf la première et la dernière
+        if( (i!=0) && (i !=(m_File1Dimension-1)) )
+        {
+            cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
+            total1 += this->m_File1Matrix[a-1][b-1];
+            total2 += this->m_File2Matrix[a-1][b-1];
+        }
+        // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
+        if(i == (m_File1Dimension-1))
+        {
+            cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
+            total1 += this->m_File1Matrix[a-1][0];
+            total2 += this->m_File2Matrix[a-1][0];
+        }
+    }
+    cout << "Distance totale: " << total1 << " Km" << endl;
+    cout << "Coût total: " << total2 << " €" << endl;
 }
 
 // Retourne un tableau des villes classées aléatoirement (de 1 à n) pas de (0 à n-1)
