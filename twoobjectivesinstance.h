@@ -13,10 +13,13 @@
     #include <algorithm>
     #include <iterator>
     #include <ctime>
+    #include <limits>
+    #include "solution.h"
 
     #define SOLUTIONS 5
 
     using namespace std;
+    typedef std::numeric_limits< double > dbl;
 
     class TwoObjectivesInstance
     {
@@ -36,17 +39,17 @@
             unsigned int GetFile2Dimension() { return m_File2Dimension; }
             void SetFile2Dimension(unsigned int val) { m_File2Dimension = val; }
 
-            unsigned int** GetFile1Matrix() { return m_File1Matrix; }
-            void SetFile1Matrix(unsigned int** val) { m_File1Matrix = val; }
-            unsigned int** GetFile2Matrix() { return m_File2Matrix; }
-            void SetFile2Matrix(unsigned int** val) { m_File2Matrix = val; }
+            double** GetFile1Matrix() { return m_File1Matrix; }
+            void SetFile1Matrix(double** val) { m_File1Matrix = val; }
+            double** GetFile2Matrix() { return m_File2Matrix; }
+            void SetFile2Matrix(double** val) { m_File2Matrix = val; }
             void generateSolution(int iteration, bool init);
             unsigned int* randomRoute(unsigned int dimension, int iteration, bool init);
         protected:
         private:
-            unsigned int ** parsingTSPFile(string filename,  unsigned int *dimension);
+            double ** parsingTSPFile(string filename,  unsigned int *dimension);
             vector<string> explode(string const & s, char delim);
-            float distanceBetweenCities(int x1, int y1, int x2, int y2);
+            double distanceBetweenCities(int x1, int y1, int x2, int y2);
 
 
             string m_Name;
@@ -56,8 +59,11 @@
             unsigned int m_seeds[SOLUTIONS];
             unsigned int m_File1Dimension;
             unsigned int m_File2Dimension;
-            unsigned int **m_File1Matrix;
-            unsigned int **m_File2Matrix;
+            double **m_File1Matrix;
+            double **m_File2Matrix;
+
+            Solution solutions[SOLUTIONS];
+
     };
 
 #endif // TWOOBJECTIVESINSTANCE_H

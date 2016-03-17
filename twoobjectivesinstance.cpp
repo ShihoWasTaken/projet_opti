@@ -8,6 +8,7 @@ TwoObjectivesInstance::TwoObjectivesInstance()
 TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
 :m_File1Path(filename1), m_File2Path(filename2)
 {
+    cout.precision(dbl::max_digits10);
     // On parse le premier fichier
     this->m_File1Matrix = this->parsingTSPFile(filename1, &this->m_File1Dimension);
     // On parse le deuxième fichier
@@ -38,9 +39,9 @@ TwoObjectivesInstance::~TwoObjectivesInstance()
    */
 }
 
-unsigned int ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *dimension)
+double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *dimension)
 {
-    unsigned int **matrix;
+    double **matrix;
     ifstream fichier("files/" + filename, ios::in);
 	if(!fichier)
 	{
@@ -84,9 +85,9 @@ unsigned int ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned 
         }
 
         // On alloue la matrice
-        matrix = new unsigned int* [*dimension];
+        matrix = new double* [*dimension];
         for (int i = 0; i < *dimension; i++)
-            matrix[i] = new unsigned int[*dimension];
+            matrix[i] = new double[*dimension];
 
         // On remplit la matrice qu'on a précédemment allouée
         for(int i = 0; i < *dimension; i++)
@@ -113,7 +114,7 @@ unsigned int ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned 
 	return matrix;
 }
 
-float TwoObjectivesInstance::distanceBetweenCities(int x1, int y1, int x2, int y2)
+double TwoObjectivesInstance::distanceBetweenCities(int x1, int y1, int x2, int y2)
 {
     return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 }
@@ -124,8 +125,8 @@ void TwoObjectivesInstance::generateSolution(int iteration, bool init)
     itineraire = this->randomRoute(m_File1Dimension, iteration, init);
     cout << "L'itinéraire est: " << endl;
     int a, b;
-    int total1 = 0;
-    int total2 = 0;
+    double total1 = 0;
+    double total2 = 0;
     for(int i = 0; i < m_File1Dimension; i++)
     {
         a = itineraire[i-1];
@@ -134,16 +135,17 @@ void TwoObjectivesInstance::generateSolution(int iteration, bool init)
         if( (i!=0) && (i !=(m_File1Dimension-1)) )
         {
             cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
-            total1 += this->m_File1Matrix[a-1][b-1];
-            total2 += this->m_File2Matrix[a-1][b-1];
+            total1 += (double) this->m_File1Matrix[a-1][b-1];
+            total2 += (double) this->m_File2Matrix[a-1][b-1];
         }
         // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
         if(i == (m_File1Dimension-1))
         {
             cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
-            total1 += this->m_File1Matrix[a-1][0];
-            total2 += this->m_File2Matrix[a-1][0];
+            total1 += (double) this->m_File1Matrix[a-1][0];
+            total2 += (double) this->m_File2Matrix[a-1][0];
         }
+        cout << "Totaux: " << total1 << " " << total2 << endl;
     }
     cout << "Distance totale: " << total1 << " Km" << endl;
     cout << "Coût total: " << total2 << " €" << endl;
