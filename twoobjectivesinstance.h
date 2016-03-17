@@ -39,7 +39,7 @@
             unsigned int** GetFile2Matrix() { return m_File2Matrix; }
             void SetFile2Matrix(unsigned int** val) { m_File2Matrix = val; }
             string generateSolution();
-            unsigned int* randomRoute(unsigned int dimension);
+            unsigned int* randomRoute(unsigned int dimension, int iteration, bool init);
         protected:
         private:
             unsigned int ** parsingTSPFile(string filename,  unsigned int *dimension);
@@ -50,6 +50,7 @@
             string m_Name;
             string m_File1Path;
             string m_File2Path;
+            unsigned int m_seeds[500];
             unsigned int m_File1Dimension;
             unsigned int m_File2Dimension;
             unsigned int **m_File1Matrix;

@@ -22,7 +22,7 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
         exit(EXIT_FAILURE);
     }
     unsigned int *itineraire;
-    itineraire = this->randomRoute(m_File1Dimension);
+    itineraire = this->randomRoute(m_File1Dimension, 0, true);
     cout << "L'itinéraire est: " << endl;
     int a, b;
     for(int i = 0; i < m_File1Dimension; i++)
@@ -131,9 +131,14 @@ string TwoObjectivesInstance::generateSolution()
 }
 
 // Retourne un tableau des villes classées aléatoirement (de 1 à n) pas de (0 à n-1)
-unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension)
+unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension, int iteration, bool init)
 {
-    std::srand(std::time(0)); // use current time as seed for random generator
+    if (init)
+    {
+        m_seeds[iteration] = std::time(0);
+    }
+    std::srand(m_seeds[iteration]);
+
     bool picked[dimension];
     unsigned int *villes = new unsigned int[dimension];
     for(int i = 0; i < dimension; i++)
