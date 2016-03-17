@@ -50,6 +50,7 @@
             string m_Name;
             string m_File1Path;
             string m_File2Path;
+
             unsigned int m_seeds[500];
             unsigned int m_File1Dimension;
             unsigned int m_File2Dimension;

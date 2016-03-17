@@ -24,6 +24,5 @@ int main()
 
 
     cout << "Hello world!" << endl;
-    instance.randomRoute(5);
     return 0;
 }

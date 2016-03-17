@@ -25,15 +25,29 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
     itineraire = this->randomRoute(m_File1Dimension, 0, true);
     cout << "L'itinéraire est: " << endl;
     int a, b;
+    int total1 = 0;
+    int total2 = 0;
     for(int i = 0; i < m_File1Dimension; i++)
     {
-        a = itineraire[i-1] - 1;
-        b = itineraire[i] - 1;
+        a = itineraire[i-1];
+        b = itineraire[i];
+        // Toutes les itérations sauf la première et la dernière
         if( (i!=0) && (i !=(m_File1Dimension-1)) )
-            cout << " Ville N°" << itineraire[i-1] << " => " << "Ville N°" << itineraire[i] << "(" << this->m_File1Matrix[a][b] << "," << this->m_File2Matrix[a][b] << ")" << endl;
+        {
+            cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
+            total1 += this->m_File1Matrix[a-1][b-1];
+            total2 += this->m_File2Matrix[a-1][b-1];
+        }
+        // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
         if(i == (m_File1Dimension-1))
-            cout << " Ville N°" << itineraire[i-1] << " => " << "Ville N°" << itineraire[0] << "(" << this->m_File1Matrix[a][0] << "," << this->m_File2Matrix[a][0] << ")" << endl;
+        {
+            cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
+            total1 += this->m_File1Matrix[a-1][0];
+            total2 += this->m_File2Matrix[a-1][0];
+        }
     }
+    cout << "Distance totale: " << total1 << " Km" << endl;
+    cout << "Coût total: " << total2 << " €" << endl;
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()

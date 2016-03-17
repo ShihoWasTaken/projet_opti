@@ -24,3 +24,25 @@
 1458229622 source:/home/shiho/Dropbox/Semestre 8/Optimisation combinatoire/projet/twoobjectivesinstance.cpp
 	"twoobjectivesinstance.h"
 
+1458233576 source:/home/shiho/Bureau/projet_opti_comb/projet/main.cpp
+	<iostream>
+	<string>
+	"twoobjectivesinstance.h"
+
+1458233787 /home/shiho/Bureau/projet_opti_comb/projet/twoobjectivesinstance.h
+	<iostream>
+	<string>
+	<vector>
+	<sstream>
+	<utility>
+	<fstream>
+	<cmath>
+	<numeric>
+	<random>
+	<algorithm>
+	<iterator>
+	<ctime>
+
+1458233984 source:/home/shiho/Bureau/projet_opti_comb/projet/twoobjectivesinstance.cpp
+	"twoobjectivesinstance.h"
+
