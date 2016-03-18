@@ -19,6 +19,8 @@
     #define SOLUTIONS 5
 
     using namespace std;
+
+    // Un typedef pour établier la précision des float/double
     typedef std::numeric_limits< double > dbl;
 
     class TwoObjectivesInstance
@@ -43,20 +45,20 @@
             void SetFile1Matrix(double** val) { m_File1Matrix = val; }
             double** GetFile2Matrix() { return m_File2Matrix; }
             void SetFile2Matrix(double** val) { m_File2Matrix = val; }
-            void generateSolution(int iteration, bool init);
-            unsigned int* randomRoute(unsigned int dimension, int iteration, bool init);
+            void generateSolution(int iteration);
+            unsigned int* randomRoute(unsigned int dimension, int iteration);
         protected:
         private:
             double ** parsingTSPFile(string filename,  unsigned int *dimension);
             vector<string> explode(string const & s, char delim);
             double distanceBetweenCities(int x1, int y1, int x2, int y2);
+            void checkDominance(int iterationMax);
 
 
             string m_Name;
             string m_File1Path;
             string m_File2Path;
 
-            unsigned int m_seeds[SOLUTIONS];
             unsigned int m_File1Dimension;
             unsigned int m_File2Dimension;
             double **m_File1Matrix;

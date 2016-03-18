@@ -5,7 +5,7 @@ Solution::Solution()
     //ctor
 }
 
-Solution::Solution(float distance, float cost)
+Solution::Solution(double distance, double cost)
 :m_distance(distance), m_cost(cost), m_dominated(false)
 {
     //ctor

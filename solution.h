@@ -9,18 +9,18 @@
     {
         public:
             Solution();
-            Solution(float distance, float cost);
+            Solution(double distance, double cost);
             virtual ~Solution();
-            float Getdistance() { return m_distance; }
-            void Setdistance(float val) { m_distance = val; }
-            float Getcost() { return m_cost; }
-            void Setcost(float val) { m_cost = val; }
+            double Getdistance() { return m_distance; }
+            void Setdistance(double val) { m_distance = val; }
+            double Getcost() { return m_cost; }
+            void Setcost(double val) { m_cost = val; }
             bool Getdominated() { return m_dominated; }
             void Setdominated(bool val) { m_dominated = val; }
         protected:
         private:
-            float m_distance;
-            float m_cost;
+            double m_distance;
+            double m_cost;
             bool m_dominated;
     };
 

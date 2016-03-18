@@ -8,7 +8,11 @@ TwoObjectivesInstance::TwoObjectivesInstance()
 TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
 :m_File1Path(filename1), m_File2Path(filename2)
 {
-    cout.precision(dbl::max_digits10);
+    // On initialise srand
+    std::srand(std::time(0));
+    // On établit la précision
+    //cout.precision(dbl::max_digits10);
+    cout.precision(8);
     // On parse le premier fichier
     this->m_File1Matrix = this->parsingTSPFile(filename1, &this->m_File1Dimension);
     // On parse le deuxième fichier
@@ -26,7 +30,17 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
     for(int i = 0; i < SOLUTIONS; i++)
     {
         cout << endl << "Solution N°" << i+1 << endl;
-        this->generateSolution(i,true);
+        this->generateSolution(i);
+        this->checkDominance(i);
+    }
+    // On affiche les 500 solutions
+    for(int i = 0; i < SOLUTIONS; i++)
+    {
+        cout << endl << "Solution N°" << i+1 << endl;
+        if(!this->solutions[i].Getdominated())
+            cout << "Distance: " << this->solutions[i].Getdistance() << " - Coût: " << this->solutions[i].Getcost() << endl;
+        else
+            cout << "Cette solution est dominée" << endl;
     }
 }
 
@@ -37,6 +51,16 @@ TwoObjectivesInstance::~TwoObjectivesInstance()
       delete [] m_File1Matrix[i];
    delete [] m_File1Matrix;
    */
+}
+
+// Une solution est dominée si sa distance et son cout sont tous les deux plus grand que ceux qu'une autre solution
+void TwoObjectivesInstance::checkDominance(int iterationMax)
+{
+    for(int i = 0; i < iterationMax; i++)
+    {
+        if( (solutions[iterationMax].Getdistance() < solutions[i].Getdistance()) && (solutions[iterationMax].Getcost() < solutions[i].Getcost()) )
+            this->solutions[i].Setdominated(true);
+    }
 }
 
 double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *dimension)
@@ -119,10 +143,10 @@ double TwoObjectivesInstance::distanceBetweenCities(int x1, int y1, int x2, int 
     return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 }
 
-void TwoObjectivesInstance::generateSolution(int iteration, bool init)
+void TwoObjectivesInstance::generateSolution(int iteration)
 {
     unsigned int *itineraire;
-    itineraire = this->randomRoute(m_File1Dimension, iteration, init);
+    itineraire = this->randomRoute(m_File1Dimension, iteration);
     cout << "L'itinéraire est: " << endl;
     int a, b;
     double total1 = 0;
@@ -134,31 +158,29 @@ void TwoObjectivesInstance::generateSolution(int iteration, bool init)
         // Toutes les itérations sauf la première et la dernière
         if( (i!=0) && (i !=(m_File1Dimension-1)) )
         {
-            cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
+            //cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
             total1 += (double) this->m_File1Matrix[a-1][b-1];
             total2 += (double) this->m_File2Matrix[a-1][b-1];
         }
         // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
         if(i == (m_File1Dimension-1))
         {
-            cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
+            //cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
             total1 += (double) this->m_File1Matrix[a-1][0];
             total2 += (double) this->m_File2Matrix[a-1][0];
         }
-        cout << "Totaux: " << total1 << " " << total2 << endl;
     }
+    this->solutions[iteration] = Solution(total1, total2);
     cout << "Distance totale: " << total1 << " Km" << endl;
     cout << "Coût total: " << total2 << " €" << endl;
 }
 
+
 // Retourne un tableau des villes classées aléatoirement (de 1 à n) pas de (0 à n-1)
-unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension, int iteration, bool init)
+unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension, int iteration)
 {
-    if (init)
-    {
-        m_seeds[iteration] = std::time(0);
-    }
-    std::srand(m_seeds[iteration]);
+
+
 
     bool picked[dimension];
     unsigned int *villes = new unsigned int[dimension];
