@@ -50,6 +50,15 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         cout << "Dominée online: " << this->m_solutions[i].GetOnlineDominated() << endl;
         cout << "Dominée offline: " << this->m_solutions[i].GetOfflineDominated() << endl;
     }
+    string input = "online500_kroAB100.txt";
+    string output = "output.jpg";
+    string gnuplotCommand = "gnuplot -e \"";
+    gnuplotCommand += "set terminal jpeg;";
+    gnuplotCommand += "set output \\\"" + output + "\\\";";
+    gnuplotCommand += "plot \\\"" + input + "\\\";";
+    gnuplotCommand += "\"";
+    system(gnuplotCommand.c_str());
+
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
