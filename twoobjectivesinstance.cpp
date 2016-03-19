@@ -34,21 +34,21 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     {
         cout << endl << "Solution N°" << i+1 << endl;
         this->generateSolution(i);
-//        this->checkDominance(i);
     }
-    offline();
+
+    // Filtrage Online
+    this->onlineFiltering();
+
+    // Filtrage Offline
+    this->offlineFiltering();
+
     // On affiche les 500 solutions
     for(int i = 0; i < SOLUTIONS; i++)
     {
         cout << endl << "Solution N°" << i+1 << endl;
-        if(this->m_solutions[i].Getdominated())
-        {
-            cout << "Distance: " << this->m_solutions[i].Getdistance() << " - Coût: " << this->m_solutions[i].Getcost() << endl;
-            cout << "Cette solution est dominée" << endl;
-        }
-        else
-            cout << "Distance: " << this->m_solutions[i].Getdistance() << " - Coût: " << this->m_solutions[i].Getcost() << endl;
-
+        cout << "Distance: " << this->m_solutions[i].Getdistance() << " - Coût: " << this->m_solutions[i].Getcost() << endl;
+        cout << "Dominée online: " << this->m_solutions[i].GetOnlineDominated() << endl;
+        cout << "Dominée offline: " << this->m_solutions[i].GetOfflineDominated() << endl;
     }
 }
 
@@ -63,28 +63,9 @@ void TwoObjectivesInstance::checkDominance(int iterationMax)
     for(int i = 0; i < iterationMax; i++)
     {
         if( (m_solutions[iterationMax].Getdistance() < m_solutions[i].Getdistance()) && (m_solutions[iterationMax].Getcost() < m_solutions[i].Getcost()) )
-            this->m_solutions[i].Setdominated(true);
+            this->m_solutions[i].SetOnlineDominated(true);
     }
 }
-
-void TwoObjectivesInstance::offline()
-{
-    for(int i = 0; i < SOLUTIONS; ++i)
-    {
-        for(int j = i+1; j < SOLUTIONS; ++j)
-        {
-            if((m_solutions[i].Getdistance() > m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() > m_solutions[j].Getcost()))
-            {
-                m_solutions[i].Setdominated(true);
-            }
-            else if ((m_solutions[i].Getdistance() < m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() < m_solutions[j].Getcost()))
-            {
-                m_solutions[j].Setdominated(true);
-            }
-        }
-    }
-}
-
 
 // Fonction de parsing du fichier
 double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *dimension)
@@ -164,6 +145,39 @@ double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *d
 double TwoObjectivesInstance::distanceBetweenCities(int x1, int y1, int x2, int y2)
 {
     return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
+}
+
+// Filtre avec une stratégie Online
+void TwoObjectivesInstance::onlineFiltering()
+{
+    for(int i = 0; i < SOLUTIONS; i++)
+    {
+        cout << endl << "Solution N°" << i+1 << endl;
+        for(int j = 0; j < i; j++)
+        {
+            if( (m_solutions[i].Getdistance() < m_solutions[j].Getdistance()) && (m_solutions[i].Getcost() < m_solutions[j].Getcost()) )
+                this->m_solutions[j].SetOnlineDominated(true);
+        }
+    }
+}
+
+// Filtre avec une stratégie Offline
+void TwoObjectivesInstance::offlineFiltering()
+{
+    for(int i = 0; i < SOLUTIONS; ++i)
+    {
+        for(int j = i+1; j < SOLUTIONS; ++j)
+        {
+            if((m_solutions[i].Getdistance() > m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() > m_solutions[j].Getcost()))
+            {
+                m_solutions[i].SetOfflineDominated(true);
+            }
+            else if ((m_solutions[i].Getdistance() < m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() < m_solutions[j].Getcost()))
+            {
+                m_solutions[j].SetOfflineDominated(true);
+            }
+        }
+    }
 }
 
 // Génère une solution

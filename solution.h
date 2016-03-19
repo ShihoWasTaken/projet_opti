@@ -21,8 +21,10 @@
             void Setdistance(double val) { m_distance = val; }
             double Getcost() { return m_cost; }
             void Setcost(double val) { m_cost = val; }
-            bool Getdominated() { return m_dominated; }
-            void Setdominated(bool val) { m_dominated = val; }
+            bool GetOnlineDominated() { return m_onlineDominated; }
+            void SetOnlineDominated(bool val) { m_onlineDominated = val; }
+            bool GetOfflineDominated() { return m_offlineDominated; }
+            void SetOfflineDominated(bool val) { m_offlineDominated = val; }
 
             // Autres fonctions membres publiques
 
@@ -33,7 +35,8 @@
             // Attributs
             double m_distance;  // Distance totale de l'itinéraire
             double m_cost;      // Cout total de l'itinéraire
-            bool m_dominated;   // Solution dominée ou non
+            bool m_onlineDominated;   // Solution dominée ou non
+            bool m_offlineDominated;   // Solution dominée ou non
     };
 
 #endif // SOLUTION_H
