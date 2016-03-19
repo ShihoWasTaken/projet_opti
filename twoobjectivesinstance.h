@@ -16,12 +16,15 @@
     #include <limits>
     #include "solution.h"
 
-    #define SOLUTIONS 5
+    #define SOLUTIONS 500
 
     using namespace std;
 
     // Un typedef pour établier la précision des float/double
     typedef std::numeric_limits< double > dbl;
+
+    // Définition d'une enum pour le filtrage
+    enum Filtrage { OFFLINE, ONLINE};
 
     /*  Cette classe représente une instance à étudier.
         Une instance possède:
@@ -71,6 +74,8 @@
             void checkDominance(int iterationMax);
             void offlineFiltering();
             void onlineFiltering();
+            void saveSolutions(string filename);
+            void savePareto(string filename, Filtrage filtrage);
 
             // Attributs
             string m_Name;
@@ -82,6 +87,7 @@
             double **m_File2Matrix;
             unsigned int m_DominatedSolutionsCount;
             Solution m_solutions[SOLUTIONS];
+
 
     };
 

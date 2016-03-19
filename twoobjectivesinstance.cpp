@@ -153,12 +153,16 @@ void TwoObjectivesInstance::onlineFiltering()
     for(int i = 0; i < SOLUTIONS; i++)
     {
         cout << endl << "Solution N°" << i+1 << endl;
-        for(int j = 0; j < i; j++)
+        for(int j = 0; j <= i; j++)
         {
             if( (m_solutions[i].Getdistance() < m_solutions[j].Getdistance()) && (m_solutions[i].Getcost() < m_solutions[j].Getcost()) )
                 this->m_solutions[j].SetOnlineDominated(true);
+            else if ((m_solutions[i].Getdistance() > m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() > m_solutions[j].Getcost()))
+                this->m_solutions[i].SetOnlineDominated(true);
         }
     }
+    saveSolutions("online500_" + this->m_Name + ".txt");
+    savePareto("onlinePareto500_" + this->m_Name + ".txt", ONLINE);
 }
 
 // Filtre avec une stratégie Offline
@@ -178,6 +182,8 @@ void TwoObjectivesInstance::offlineFiltering()
             }
         }
     }
+    saveSolutions("offline500_" + this->m_Name + ".txt");
+    savePareto("offlinePareto500_" + this->m_Name + ".txt", OFFLINE);
 }
 
 // Génère une solution
@@ -245,6 +251,55 @@ unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension, int ite
         villes[i] = random_variable;
     }
     return villes;
+}
+
+void TwoObjectivesInstance::saveSolutions(string filename)
+{
+        ofstream fichier(filename, ios::out | ios::trunc);
+
+        if(!fichier)
+        {
+            cerr << "Impossible d'ouvrir le fichier !" << endl;
+        }
+        else
+        {
+            for(int i = 0; i < SOLUTIONS; i++)
+            {
+                fichier << this->m_solutions[i].Getdistance() << " " << this->m_solutions[i].Getcost() << endl;
+            }
+            fichier.close();
+        }
+}
+
+void TwoObjectivesInstance::savePareto(string filename, Filtrage filtrage)
+{
+        ofstream fichier(filename, ios::out | ios::trunc);
+
+        if(!fichier)
+        {
+            cerr << "Impossible d'ouvrir le fichier !" << endl;
+        }
+        else
+        {
+            for(int i = 0; i < SOLUTIONS; i++)
+            {
+                if(filtrage == OFFLINE)
+                {
+                    if(this->m_solutions[i].GetOfflineDominated())
+                    {
+                        fichier << this->m_solutions[i].Getdistance() << " " << this->m_solutions[i].Getcost() << endl;
+                    }
+                }
+                else if(filtrage == ONLINE)
+                {
+                    if(this->m_solutions[i].GetOnlineDominated())
+                    {
+                        fichier << this->m_solutions[i].Getdistance() << " " << this->m_solutions[i].Getcost() << endl;
+                    }
+                }
+            }
+            fichier.close();
+        }
 }
 
 // Fonction explode pour aider le parsing du fichier
