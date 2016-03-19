@@ -34,17 +34,21 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     {
         cout << endl << "Solution N°" << i+1 << endl;
         this->generateSolution(i);
-        this->checkDominance(i);
+//        this->checkDominance(i);
     }
-
+    offline();
     // On affiche les 500 solutions
     for(int i = 0; i < SOLUTIONS; i++)
     {
         cout << endl << "Solution N°" << i+1 << endl;
-        if(!this->m_solutions[i].Getdominated())
+        if(this->m_solutions[i].Getdominated())
+        {
             cout << "Distance: " << this->m_solutions[i].Getdistance() << " - Coût: " << this->m_solutions[i].Getcost() << endl;
-        else
             cout << "Cette solution est dominée" << endl;
+        }
+        else
+            cout << "Distance: " << this->m_solutions[i].Getdistance() << " - Coût: " << this->m_solutions[i].Getcost() << endl;
+
     }
 }
 
@@ -62,6 +66,25 @@ void TwoObjectivesInstance::checkDominance(int iterationMax)
             this->m_solutions[i].Setdominated(true);
     }
 }
+
+void TwoObjectivesInstance::offline()
+{
+    for(int i = 0; i < SOLUTIONS; ++i)
+    {
+        for(int j = i+1; j < SOLUTIONS; ++j)
+        {
+            if((m_solutions[i].Getdistance() > m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() > m_solutions[j].Getcost()))
+            {
+                m_solutions[i].Setdominated(true);
+            }
+            else if ((m_solutions[i].Getdistance() < m_solutions[j].Getdistance())&&(m_solutions[i].Getcost() < m_solutions[j].Getcost()))
+            {
+                m_solutions[j].Setdominated(true);
+            }
+        }
+    }
+}
+
 
 // Fonction de parsing du fichier
 double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *dimension)

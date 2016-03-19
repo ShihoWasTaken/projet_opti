@@ -69,6 +69,7 @@
             vector<string> explode(string const & s, char delim);
             double distanceBetweenCities(int x1, int y1, int x2, int y2);
             void checkDominance(int iterationMax);
+            void offline();
 
             // Attributs
             string m_Name;
