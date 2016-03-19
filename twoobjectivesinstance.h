@@ -23,48 +23,63 @@
     // Un typedef pour établier la précision des float/double
     typedef std::numeric_limits< double > dbl;
 
+    /*  Cette classe représente une instance à étudier.
+        Une instance possède:
+            - m_Name | un nom (exemple: kroAB100)
+            - m_File1Path | un fichier correspondant aux distances entre les villes
+            - m_File2Path | un fichier correspondant aux coûts entre les villes
+            - m_File1Dimension | le nombre de villes du fichier 1
+            - m_File2Dimension | le nombre de villes du fichier 2
+            - m_File1Matrix | la matrice des distances entre chaque villes
+            - m_File2Matrix | la matrice des coût entre chaque villes
+            - m_solutions | un tableau contenant les 500 solutions de l'instance
+            - m_DominatedSolutionsCount | le nombre de solutions dominées
+    */
     class TwoObjectivesInstance
     {
         public:
+            // Constructeurs / Destructeurs
             TwoObjectivesInstance();
-            TwoObjectivesInstance(string filename1, string filename2);
+            TwoObjectivesInstance(string name, string filename1, string filename2);
             virtual ~TwoObjectivesInstance();
+
+            // Getters / Setters
             string GetName() { return m_Name; }
             void SetName(string val) { m_Name = val; }
             string GetFile1Path() { return m_File1Path; }
             void SetFile1Path(string val) { m_File1Path = val; }
             string GetFile2Path() { return m_File2Path; }
             void SetFile2Path(string val) { m_File2Path = val; }
-
             unsigned int GetFile1Dimension() { return m_File1Dimension; }
             void SetFile1Dimension(unsigned int val) { m_File1Dimension = val; }
             unsigned int GetFile2Dimension() { return m_File2Dimension; }
             void SetFile2Dimension(unsigned int val) { m_File2Dimension = val; }
-
             double** GetFile1Matrix() { return m_File1Matrix; }
             void SetFile1Matrix(double** val) { m_File1Matrix = val; }
             double** GetFile2Matrix() { return m_File2Matrix; }
             void SetFile2Matrix(double** val) { m_File2Matrix = val; }
+
+            // Autres fonctions membres publiques
             void generateSolution(int iteration);
             unsigned int* randomRoute(unsigned int dimension, int iteration);
         protected:
         private:
+            // Fonctions membres privées
             double ** parsingTSPFile(string filename,  unsigned int *dimension);
             vector<string> explode(string const & s, char delim);
             double distanceBetweenCities(int x1, int y1, int x2, int y2);
             void checkDominance(int iterationMax);
 
-
+            // Attributs
             string m_Name;
             string m_File1Path;
             string m_File2Path;
-
             unsigned int m_File1Dimension;
             unsigned int m_File2Dimension;
             double **m_File1Matrix;
             double **m_File2Matrix;
-
-            Solution solutions[SOLUTIONS];
+            unsigned int m_DominatedSolutionsCount;
+            Solution m_solutions[SOLUTIONS];
 
     };
 

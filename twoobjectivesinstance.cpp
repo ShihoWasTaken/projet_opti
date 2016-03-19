@@ -5,20 +5,22 @@ TwoObjectivesInstance::TwoObjectivesInstance()
     //ctor
 }
 
-TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
-:m_File1Path(filename1), m_File2Path(filename2)
+TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, string filename2)
+:m_Name(name), m_File1Path(filename1), m_File2Path(filename2)
 {
     // On initialise srand
     std::srand(std::time(0));
+
     // On établit la précision
     //cout.precision(dbl::max_digits10);
     cout.precision(8);
-    // On parse le premier fichier
+
+    // On parse les fichiers
     this->m_File1Matrix = this->parsingTSPFile(filename1, &this->m_File1Dimension);
-    // On parse le deuxième fichier
     this->m_File2Matrix = this->parsingTSPFile(filename2, &this->m_File2Dimension);
 
     // On teste si les dimensions des deux fichiers sont les mêmes
+    // Si ce n'est pas le cas, il y'a un problème
     if(this->m_File1Dimension != this->m_File2Dimension)
     {
         cout << "Erreur: les deux fichiers n'ont pas le même nombre de villes" << endl;
@@ -26,6 +28,7 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
         cout << filename2 << " possède " << this->m_File2Dimension << " villes"<< endl;
         exit(EXIT_FAILURE);
     }
+
     // On génère 500 solutions
     for(int i = 0; i < SOLUTIONS; i++)
     {
@@ -33,12 +36,13 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
         this->generateSolution(i);
         this->checkDominance(i);
     }
+
     // On affiche les 500 solutions
     for(int i = 0; i < SOLUTIONS; i++)
     {
         cout << endl << "Solution N°" << i+1 << endl;
-        if(!this->solutions[i].Getdominated())
-            cout << "Distance: " << this->solutions[i].Getdistance() << " - Coût: " << this->solutions[i].Getcost() << endl;
+        if(!this->m_solutions[i].Getdominated())
+            cout << "Distance: " << this->m_solutions[i].Getdistance() << " - Coût: " << this->m_solutions[i].Getcost() << endl;
         else
             cout << "Cette solution est dominée" << endl;
     }
@@ -46,11 +50,7 @@ TwoObjectivesInstance::TwoObjectivesInstance(string filename1, string filename2)
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
 {
-    /*
-   for (int i = 0; i < m_File1Dimension; i++)
-      delete [] m_File1Matrix[i];
-   delete [] m_File1Matrix;
-   */
+
 }
 
 // Une solution est dominée si sa distance et son cout sont tous les deux plus grand que ceux qu'une autre solution
@@ -58,11 +58,12 @@ void TwoObjectivesInstance::checkDominance(int iterationMax)
 {
     for(int i = 0; i < iterationMax; i++)
     {
-        if( (solutions[iterationMax].Getdistance() < solutions[i].Getdistance()) && (solutions[iterationMax].Getcost() < solutions[i].Getcost()) )
-            this->solutions[i].Setdominated(true);
+        if( (m_solutions[iterationMax].Getdistance() < m_solutions[i].Getdistance()) && (m_solutions[iterationMax].Getcost() < m_solutions[i].Getcost()) )
+            this->m_solutions[i].Setdominated(true);
     }
 }
 
+// Fonction de parsing du fichier
 double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *dimension)
 {
     double **matrix;
@@ -101,8 +102,6 @@ double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *d
         for(int i = 0; i < *dimension; i++)
         {
             getline(fichier, ligne);
-            cout << ligne << endl;
-
             v = this->explode(ligne, ' ');
             x[i] = stoi(v[1]);
             y[i] = stoi(v[2]);
@@ -128,7 +127,7 @@ double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *d
                 {
                     matrix[i][j] = distanceBetweenCities(x[i], y[i], x[j], y[j]);
                 }
-                cout << "[" << i+1 << "]" << "[" << j+1 << "] = " << matrix[i][j] << " Km"<< endl;
+               //cout << "[" << i+1 << "]" << "[" << j+1 << "] = " << matrix[i][j] << " Km"<< endl;
             }
         }
 
@@ -138,11 +137,13 @@ double ** TwoObjectivesInstance::parsingTSPFile(string filename, unsigned int *d
 	return matrix;
 }
 
+// Retourne la distance ou le coût entre 2 villes
 double TwoObjectivesInstance::distanceBetweenCities(int x1, int y1, int x2, int y2)
 {
     return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) );
 }
 
+// Génère une solution
 void TwoObjectivesInstance::generateSolution(int iteration)
 {
     unsigned int *itineraire;
@@ -155,6 +156,7 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     {
         a = itineraire[i-1];
         b = itineraire[i];
+
         // Toutes les itérations sauf la première et la dernière
         if( (i!=0) && (i !=(m_File1Dimension-1)) )
         {
@@ -162,6 +164,7 @@ void TwoObjectivesInstance::generateSolution(int iteration)
             total1 += (double) this->m_File1Matrix[a-1][b-1];
             total2 += (double) this->m_File2Matrix[a-1][b-1];
         }
+
         // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
         if(i == (m_File1Dimension-1))
         {
@@ -170,7 +173,7 @@ void TwoObjectivesInstance::generateSolution(int iteration)
             total2 += (double) this->m_File2Matrix[a-1][0];
         }
     }
-    this->solutions[iteration] = Solution(total1, total2);
+    this->m_solutions[iteration] = Solution(total1, total2);
     cout << "Distance totale: " << total1 << " Km" << endl;
     cout << "Coût total: " << total2 << " €" << endl;
 }
@@ -207,7 +210,7 @@ unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension, int ite
     return villes;
 }
 
-
+// Fonction explode pour aider le parsing du fichier
 vector<string> TwoObjectivesInstance::explode(string const & s, char delim)
 {
     vector<string> result;
