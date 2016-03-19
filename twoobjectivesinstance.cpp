@@ -50,14 +50,13 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         cout << "Dominée online: " << this->m_solutions[i].GetOnlineDominated() << endl;
         cout << "Dominée offline: " << this->m_solutions[i].GetOfflineDominated() << endl;
     }
-    string input = "online500_kroAB100.txt";
-    string output = "output.jpg";
-    string gnuplotCommand = "gnuplot -e \"";
-    gnuplotCommand += "set terminal jpeg;";
-    gnuplotCommand += "set output \\\"" + output + "\\\";";
-    gnuplotCommand += "plot \\\"" + input + "\\\";";
-    gnuplotCommand += "\"";
-    system(gnuplotCommand.c_str());
+    // On crée un graphique sur gnuplot avec toutes les solutions
+    this->makePlot(this->m_Name, OFFLINE, false);
+    this->makePlot(this->m_Name, ONLINE, false);
+
+    // On crée un graphique sur gnuplot avec le Front de Pareto
+    this->makePlot(this->m_Name, OFFLINE, true);
+    this->makePlot(this->m_Name, ONLINE, true);
 
 }
 
@@ -294,14 +293,14 @@ void TwoObjectivesInstance::savePareto(string filename, Filtrage filtrage)
             {
                 if(filtrage == OFFLINE)
                 {
-                    if(this->m_solutions[i].GetOfflineDominated())
+                    if(!this->m_solutions[i].GetOfflineDominated())
                     {
                         fichier << this->m_solutions[i].Getdistance() << " " << this->m_solutions[i].Getcost() << endl;
                     }
                 }
                 else if(filtrage == ONLINE)
                 {
-                    if(this->m_solutions[i].GetOnlineDominated())
+                    if(!this->m_solutions[i].GetOnlineDominated())
                     {
                         fichier << this->m_solutions[i].Getdistance() << " " << this->m_solutions[i].Getcost() << endl;
                     }
@@ -309,6 +308,26 @@ void TwoObjectivesInstance::savePareto(string filename, Filtrage filtrage)
             }
             fichier.close();
         }
+}
+
+void TwoObjectivesInstance::makePlot(string filename, Filtrage filtrage, bool isPareto)
+{
+    string prefix;
+    if(filtrage == ONLINE)
+        prefix = "online";
+    else
+        prefix = "offline";
+    string pareto = "";
+    if(isPareto)
+        pareto = "Pareto";
+    string input = prefix + pareto + "500_" + filename + ".txt";
+    string output = prefix + pareto + "500_" + filename + ".jpg";
+    string gnuplotCommand = "gnuplot -e \"";
+    gnuplotCommand += "set terminal jpeg;";
+    gnuplotCommand += "set output \\\"" + output + "\\\";";
+    gnuplotCommand += "plot \\\"" + input + "\\\";";
+    gnuplotCommand += "\"";
+    system(gnuplotCommand.c_str());
 }
 
 // Fonction explode pour aider le parsing du fichier

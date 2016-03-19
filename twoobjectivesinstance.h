@@ -76,6 +76,7 @@
             void onlineFiltering();
             void saveSolutions(string filename);
             void savePareto(string filename, Filtrage filtrage);
+            void makePlot(string filename, Filtrage filtrage, bool isPareto);
 
             // Attributs
             string m_Name;
