@@ -26,8 +26,11 @@
             void SetOnlineDominated(bool val) { m_onlineDominated = val; }
             bool GetOfflineDominated() { return m_offlineDominated; }
             void SetOfflineDominated(bool val) { m_offlineDominated = val; }
+            bool GetExplored() { return m_explored; }
+            void SetExplored(bool explored) { m_explored = explored; }
 
             // Autres fonctions membres publiques
+            vector<Solution> GenerateVoisinage();
 
         protected:
         private:
@@ -38,7 +41,6 @@
             double m_cost;      // Cout total de l'itinéraire
             bool m_onlineDominated;   // Solution dominée ou non
             bool m_offlineDominated;   // Solution dominée ou non
-            vector<Solution> m_voisinage;
             bool m_explored;
             unsigned int *m_itineraire;
     };

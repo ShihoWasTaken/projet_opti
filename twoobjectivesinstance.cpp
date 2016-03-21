@@ -247,7 +247,32 @@ void TwoObjectivesInstance::PLS()
 
     //A rajouter dans solution : itinéraire (liste des villes), voisinage et bool explored
 
+    //init archive : toutes les solutions de m_solutions non-dominées
+    for(int i = 0; i < SOLUTIONS; ++i)
+    {
+        if(!m_solutions[i].GetOfflineDominated())
+        {
+            archive.push_back(m_solutions[i]);
+        }
+    }
+
     //best_sols = archive
+    best_sols = archive;
+
+    while(!archive.empty())
+    {
+        Solution s(archive.front()); //vérifier que le constructeur par recopie fonctionne...
+        for(auto p : s.GetVoisinage()) //TODO
+        {
+            if ((p.Getdistance() < s.Getdistance())&&(p.Getcost() < s.Getcost()))
+            {
+                p.SetExplored(false); //TODO
+                update(best_sols, p); //TODO : ajout p à bestsols + filtrage
+            }
+        }
+        s.SetExplored(true);
+        archive = GetUnexplored(best_sols);//TODO
+    }
 
     //tant que !archive.empty
         //solution s = archive.first
@@ -259,7 +284,7 @@ void TwoObjectivesInstance::PLS()
             //fin si
         //fin pour
         //s.explored = true
-        //archive = getUnexplored(bestols)
+        //archive = getUnexplored(bestsols)
     //fin tantque
 }
 
