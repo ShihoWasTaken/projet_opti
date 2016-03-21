@@ -78,6 +78,8 @@
             void savePareto(string filename, Filtrage filtrage);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
             void PLS();
+            void createApproxFile();
+            void fillApproxFile();
 
             // Attributs
             string m_Name;

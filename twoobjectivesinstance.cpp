@@ -58,6 +58,16 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     this->makePlot(this->m_Name, OFFLINE, true);
     this->makePlot(this->m_Name, ONLINE, true);
 
+    // 5) Fichier 10 approx front pareto
+    this->createApproxFile();
+
+    // On exécute au moins 10 fois
+    for(int i = 0; i < 10; i++)
+    {
+        // On remplit un front de Pareto dans le fichier
+        this->fillApproxFile();
+    }
+
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -251,6 +261,41 @@ void TwoObjectivesInstance::PLS()
         //s.explored = true
         //archive = getUnexplored(bestols)
     //fin tantque
+}
+
+void TwoObjectivesInstance::createApproxFile()
+{
+        string filename = "10_Approximations_Pareto_" + this->m_Name + ".txt";
+        ofstream fichier(filename, ios::out | ios::trunc);
+
+        if(!fichier)
+        {
+            cerr << "Impossible de créer le fichier " << filename << endl;
+        }
+        else
+        {
+            fichier.close();
+        }
+}
+
+void TwoObjectivesInstance::fillApproxFile()
+{
+        string filename = "10_Approximations_Pareto_" + this->m_Name + ".txt";
+        ofstream fichier(filename, ios::out | ios::app);
+
+        if(!fichier)
+        {
+            cerr << "Impossible d'ouvrir le fichier " << filename << endl;
+        }
+        else
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                fichier << "test ligne n°" << i << endl;
+            }
+            fichier << endl;
+            fichier.close();
+        }
 }
 
 

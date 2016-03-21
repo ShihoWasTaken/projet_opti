@@ -24,12 +24,12 @@
 1458229622 source:/home/shiho/Dropbox/Semestre 8/Optimisation combinatoire/projet/twoobjectivesinstance.cpp
 	"twoobjectivesinstance.h"
 
-1458393712 source:/home/shiho/Bureau/projet_opti_comb/projet/main.cpp
+1458578090 source:/home/shiho/Bureau/projet_opti_comb/projet/main.cpp
 	<iostream>
 	<string>
 	"twoobjectivesinstance.h"
 
-1458416351 /home/shiho/Bureau/projet_opti_comb/projet/twoobjectivesinstance.h
+1458581771 /home/shiho/Bureau/projet_opti_comb/projet/twoobjectivesinstance.h
 	<iostream>
 	<string>
 	<vector>
@@ -45,11 +45,12 @@
 	<limits>
 	"solution.h"
 
-1458411190 source:/home/shiho/Bureau/projet_opti_comb/projet/twoobjectivesinstance.cpp
+1458416582 source:/home/shiho/Bureau/projet_opti_comb/projet/twoobjectivesinstance.cpp
 	"twoobjectivesinstance.h"
 
-1458399742 /home/shiho/Bureau/projet_opti_comb/projet/solution.h
+1458581189 /home/shiho/Bureau/projet_opti_comb/projet/solution.h
 	<iostream>
+	<vector>
 
 1458399205 source:/home/shiho/Bureau/projet_opti_comb/projet/solution.cpp
 	"solution.h"
