@@ -77,6 +77,7 @@
             void saveSolutions(string filename);
             void savePareto(string filename, Filtrage filtrage);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
+            void PLS();
 
             // Attributs
             string m_Name;
@@ -88,8 +89,6 @@
             double **m_File2Matrix;
             unsigned int m_DominatedSolutionsCount;
             Solution m_solutions[SOLUTIONS];
-
-
     };
 
 #endif // TWOOBJECTIVESINSTANCE_H

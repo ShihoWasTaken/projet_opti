@@ -37,6 +37,9 @@
             double m_cost;      // Cout total de l'itinéraire
             bool m_onlineDominated;   // Solution dominée ou non
             bool m_offlineDominated;   // Solution dominée ou non
+            vector<Solution> m_voisinage;
+            bool m_explored;
+            unsigned int *m_itineraire;
     };
 
 #endif // SOLUTION_H

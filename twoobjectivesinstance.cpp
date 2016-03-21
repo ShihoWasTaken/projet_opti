@@ -230,6 +230,30 @@ void TwoObjectivesInstance::generateSolution(int iteration)
 }
 
 
+void TwoObjectivesInstance::PLS()
+{
+    vector<Solution> archive; //contient toutes les solutions non-dominées à explorer
+    vector<Solution> best_sols; //set of solutions that are a Pareto local optimum
+
+    //A rajouter dans solution : itinéraire (liste des villes), voisinage et bool explored
+
+    //best_sols = archive
+
+    //tant que !archive.empty
+        //solution s = archive.first
+        //voisinage = s.getVoisinage
+        //pour chaque solution i de voisinage
+            //si i meilleure que s alors
+                //i.explored = false
+                //update(best_sols, i) : on ajoute i à best_sols et on filtre best_sols
+            //fin si
+        //fin pour
+        //s.explored = true
+        //archive = getUnexplored(bestols)
+    //fin tantque
+}
+
+
 // Retourne un tableau des villes classées aléatoirement (de 1 à n) pas de (0 à n-1)
 unsigned int* TwoObjectivesInstance::randomRoute(unsigned int dimension, int iteration)
 {
