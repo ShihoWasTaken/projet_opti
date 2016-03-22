@@ -28,10 +28,10 @@
             void SetOfflineDominated(bool val) { m_offlineDominated = val; }
             bool GetExplored() { return m_explored; }
             void SetExplored(bool explored) { m_explored = explored; }
+            vector<unsigned int> GetItineraire() { return m_itineraire; }
+            void SetItineraire(vector<unsigned int> itineraire) { m_itineraire = itineraire; }
 
             // Autres fonctions membres publiques
-            vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
-            vector<Solution> GenerateVoisinage();
 
         protected:
         private:

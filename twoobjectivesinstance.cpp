@@ -258,7 +258,7 @@ void TwoObjectivesInstance::PLS()
     //init archive : toutes les solutions de m_solutions non-dominées
     for(int i = 0; i < SOLUTIONS; ++i)
     {
-        if(!m_solutions[i].GetOfflineDominated())
+        if(!m_solutions[i].GetOnlineDominated())
         {
             archive.push_back(m_solutions[i]);
         }
@@ -270,7 +270,7 @@ void TwoObjectivesInstance::PLS()
     while(!archive.empty())
     {
         Solution s(archive.front()); //vérifier que le constructeur par recopie fonctionne...
-        for(auto p : s.GenerateVoisinage()) //TODO
+        for(auto p : GenerateVoisinage(s))
         {
             if ((p.Getdistance() < s.Getdistance())&&(p.Getcost() < s.Getcost()))
             {
@@ -295,6 +295,42 @@ void TwoObjectivesInstance::PLS()
         //archive = getUnexplored(bestsols)
     //fin tantque
 }
+
+vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2)
+{
+    vector<unsigned int> voisine;
+    int j = 0;
+    for(int i = 0; i < v.size() ; i++)
+    {
+        if( !(i < index1) && !(i > index2) )
+        {
+            voisine.push_back(v.at(index2 - j++));
+        }
+        else
+        {
+            voisine.push_back(v.at(i));
+        }
+    }
+    return voisine;
+}
+
+vector<Solution> TwoObjectivesInstance::GenerateVoisinage(Solution s)
+{
+    vector<Solution> voisinage;
+    for(unsigned int i = 0; i < s.GetItineraire().size()-1; ++i)
+    {
+        for(unsigned int j = i+1; j < s.GetItineraire().size(); ++i)
+        {
+            Solution p;
+            p.SetItineraire(twoOpt(s.GetItineraire(), i, j));
+//            p.Setdistance();
+//            p.Setcost();
+            voisinage.push_back(p);
+        }
+    }
+    return voisinage;
+}
+
 
 void TwoObjectivesInstance::update(vector<Solution> &best_sols, Solution s)
 {
