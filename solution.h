@@ -30,6 +30,7 @@
             void SetExplored(bool explored) { m_explored = explored; }
 
             // Autres fonctions membres publiques
+            vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
             vector<Solution> GenerateVoisinage();
 
         protected:

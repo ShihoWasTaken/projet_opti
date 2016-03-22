@@ -78,9 +78,10 @@
             void savePareto(string filename, Filtrage filtrage);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
             void PLS();
+            void update(vector<Solution> &best_sols, Solution s);
+            void GetUnexplored(vector<Solution> best_sols, vector<Solution> &archive);
             void createApproxFile();
             void fillApproxFile();
-            vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
 
             // Attributs
             string m_Name;

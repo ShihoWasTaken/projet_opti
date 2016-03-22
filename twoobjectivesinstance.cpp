@@ -67,16 +67,16 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         // On remplit un front de Pareto dans le fichier
         this->fillApproxFile();
     }
-    vector<unsigned int> v = {0,1,2,3,4,5,6,7,8,9,10};
-    cout << endl;
-    for(int i = 0; i < v.size(); i++)
-        cout << v.at(i) << " ";
-        cout << "Normal" << endl;
-
-        vector<unsigned int> voisine = twoOpt(v, 0, 8);
-        for(int i = 0; i < voisine.size(); i++)
-        cout << voisine.at(i) << " ";
-        cout << "Voisinagé" << endl;
+//    vector<unsigned int> v = {0,1,2,3,4,5,6,7,8,9,10};
+//    cout << endl;
+//    for(int i = 0; i < v.size(); i++)
+//        cout << v.at(i) << " ";
+//        cout << "Normal" << endl;
+//
+//        vector<unsigned int> voisine = twoOpt(v, 0, 8);
+//        for(int i = 0; i < voisine.size(); i++)
+//        cout << voisine.at(i) << " ";
+//        cout << "Voisinagé" << endl;
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -248,24 +248,6 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     cout << "Coût total: " << total2 << " €" << endl;
 }
 
-vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2)
-{
-    vector<unsigned int> voisine;
-    int j = 0;
-    for(int i = 0; i < v.size() ; i++)
-    {
-        if( !(i < index1) && !(i > index2) )
-        {
-            voisine.push_back(v.at(index2 - j++));
-        }
-        else
-        {
-            voisine.push_back(v.at(i));
-        }
-    }
-    return voisine;
-}
-
 void TwoObjectivesInstance::PLS()
 {
     vector<Solution> archive; //contient toutes les solutions non-dominées à explorer
@@ -284,24 +266,24 @@ void TwoObjectivesInstance::PLS()
 
     //best_sols = archive
     best_sols = archive;
-/*
+
     while(!archive.empty())
     {
         Solution s(archive.front()); //vérifier que le constructeur par recopie fonctionne...
-        for(auto p : s.GetVoisinage()) //TODO
+        for(auto p : s.GenerateVoisinage()) //TODO
         {
             if ((p.Getdistance() < s.Getdistance())&&(p.Getcost() < s.Getcost()))
             {
-                p.SetExplored(false); //TODO
-                update(best_sols, p); //TODO : ajout p à bestsols + filtrage
+                p.SetExplored(false);
+                update(best_sols, p);
             }
         }
         s.SetExplored(true);
-        archive = GetUnexplored(best_sols);//TODO
+        GetUnexplored(best_sols, archive);
     }
-*/
+
     //tant que !archive.empty
-        //solution s = archive.first
+        //solution s = archive.front
         //voisinage = s.getVoisinage
         //pour chaque solution i de voisinage
             //si i meilleure que s alors
@@ -312,6 +294,42 @@ void TwoObjectivesInstance::PLS()
         //s.explored = true
         //archive = getUnexplored(bestsols)
     //fin tantque
+}
+
+void TwoObjectivesInstance::update(vector<Solution> &best_sols, Solution s)
+{
+    //Filtrage online
+  for (vector<Solution>::iterator i = best_sols.begin() ; i != best_sols.end(); ++i)
+  {
+    if(((*i).Getdistance() > s.Getdistance())&&((*i).Getcost() > s.Getcost()))
+    {
+        (*i).SetOnlineDominated(true);
+    }
+  }
+
+  //On enlève les solutions nouvellement dominées
+  for (vector<Solution>::iterator i = best_sols.begin() ; i != best_sols.end(); ++i)
+  {
+    if((*i).GetOnlineDominated())
+    {
+        best_sols.erase(i);
+    }
+  }
+
+  best_sols.push_back(s);
+
+}
+
+void TwoObjectivesInstance::GetUnexplored(vector<Solution> best_sols, vector<Solution> &archive)
+{
+    archive.clear();
+    for(auto b : best_sols)
+    {
+        if(!b.GetExplored())
+        {
+            archive.push_back(b);
+        }
+    }
 }
 
 void TwoObjectivesInstance::createApproxFile()
