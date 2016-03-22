@@ -68,14 +68,15 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         this->fillApproxFile();
     }
     vector<unsigned int> v = {0,1,2,3,4,5,6,7,8,9,10};
-    cout << "Vecteur normal" << endl;
+    cout << endl;
     for(int i = 0; i < v.size(); i++)
-        cout << v.at(i) << endl;
+        cout << v.at(i) << " ";
+        cout << "Normal" << endl;
 
         vector<unsigned int> voisine = twoOpt(v, 0, 8);
-        cout << endl << "Vecteur voisinagé" << endl;
         for(int i = 0; i < voisine.size(); i++)
-        cout << voisine.at(i) << endl;
+        cout << voisine.at(i) << " ";
+        cout << "Voisinagé" << endl;
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -253,16 +254,13 @@ vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsig
     int j = 0;
     for(int i = 0; i < v.size() ; i++)
     {
-        cout << "Tour N°" << i << "(i < index1) = " << (i < index1) << " | (i > index2) = " << (i > index2) << endl;
         if( !(i < index1) && !(i > index2) )
         {
             voisine.push_back(v.at(index2 - j++));
-            cout << "IF - Valeur: " << v.at(index2 - (j-1)) << endl;
         }
         else
         {
             voisine.push_back(v.at(i));
-            cout << "ELSE - Valeur: " << v.at(i) << endl;
         }
     }
     return voisine;
