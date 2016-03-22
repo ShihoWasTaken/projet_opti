@@ -42,7 +42,7 @@
             bool m_onlineDominated;   // Solution dominée ou non
             bool m_offlineDominated;   // Solution dominée ou non
             bool m_explored;
-            unsigned int *m_itineraire;
+            vector<unsigned int> m_itineraire;
     };
 
 #endif // SOLUTION_H

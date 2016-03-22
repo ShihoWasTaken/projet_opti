@@ -80,6 +80,7 @@
             void PLS();
             void createApproxFile();
             void fillApproxFile();
+            vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
 
             // Attributs
             string m_Name;

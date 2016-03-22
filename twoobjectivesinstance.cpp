@@ -67,7 +67,15 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         // On remplit un front de Pareto dans le fichier
         this->fillApproxFile();
     }
+    vector<unsigned int> v = {0,1,2,3,4,5,6,7,8,9,10};
+    cout << "Vecteur normal" << endl;
+    for(int i = 0; i < v.size(); i++)
+        cout << v.at(i) << endl;
 
+        vector<unsigned int> voisine = twoOpt(v, 0, 8);
+        cout << endl << "Vecteur voisinagé" << endl;
+        for(int i = 0; i < voisine.size(); i++)
+        cout << voisine.at(i) << endl;
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -239,6 +247,26 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     cout << "Coût total: " << total2 << " €" << endl;
 }
 
+vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2)
+{
+    vector<unsigned int> voisine;
+    int j = 0;
+    for(int i = 0; i < v.size() ; i++)
+    {
+        cout << "Tour N°" << i << "(i < index1) = " << (i < index1) << " | (i > index2) = " << (i > index2) << endl;
+        if( !(i < index1) && !(i > index2) )
+        {
+            voisine.push_back(v.at(index2 - j++));
+            cout << "IF - Valeur: " << v.at(index2 - (j-1)) << endl;
+        }
+        else
+        {
+            voisine.push_back(v.at(i));
+            cout << "ELSE - Valeur: " << v.at(i) << endl;
+        }
+    }
+    return voisine;
+}
 
 void TwoObjectivesInstance::PLS()
 {
@@ -258,7 +286,7 @@ void TwoObjectivesInstance::PLS()
 
     //best_sols = archive
     best_sols = archive;
-
+/*
     while(!archive.empty())
     {
         Solution s(archive.front()); //vérifier que le constructeur par recopie fonctionne...
@@ -273,7 +301,7 @@ void TwoObjectivesInstance::PLS()
         s.SetExplored(true);
         archive = GetUnexplored(best_sols);//TODO
     }
-
+*/
     //tant que !archive.empty
         //solution s = archive.first
         //voisinage = s.getVoisinage
@@ -322,6 +350,7 @@ void TwoObjectivesInstance::fillApproxFile()
             fichier.close();
         }
 }
+
 
 
 // Retourne un tableau des villes classées aléatoirement (de 1 à n) pas de (0 à n-1)
