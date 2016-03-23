@@ -77,6 +77,12 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
 //        for(int i = 0; i < voisine.size(); i++)
 //        cout << voisine.at(i) << " ";
 //        cout << "Voisinagé" << endl;
+
+    vector<Solution> best_sols = PLS();
+    for(unsigned int i = 0; i < best_sols.size(); i++)
+    {
+        cout << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
+    }
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -220,11 +226,12 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     vector<unsigned int> villes;
     itineraire = this->randomRoute(m_File1Dimension, iteration);
     cout << "L'itinéraire est: " << endl;
-    unsigned int a, b;
+    int a, b;
     double total1 = 0;
     double total2 = 0;
-    for(unsigned int i = 0; i < m_File1Dimension; i++)
+    for(int i = 0; i < m_File1Dimension; i++)
     {
+        unsigned int test = itineraire[i];
         villes.push_back(itineraire[i]);
         a = itineraire[i-1];
         b = itineraire[i];
@@ -251,12 +258,10 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     cout << "Coût total: " << total2 << " €" << endl;
 }
 
-void TwoObjectivesInstance::PLS()
+vector<Solution> TwoObjectivesInstance::PLS()
 {
     vector<Solution> archive; //contient toutes les solutions non-dominées à explorer
     vector<Solution> best_sols; //set of solutions that are a Pareto local optimum
-
-    //A rajouter dans solution : itinéraire (liste des villes), voisinage et bool explored
 
     //init archive : toutes les solutions de m_solutions non-dominées
     for(int i = 0; i < SOLUTIONS; ++i)
@@ -267,14 +272,15 @@ void TwoObjectivesInstance::PLS()
         }
     }
 
-    //best_sols = archive
     best_sols = archive;
 
     while(!archive.empty())
     {
-        Solution s(archive.front()); //vérifier que le constructeur par recopie fonctionne...
+        Solution s(archive.front());
+        cout << s.Getdistance() << " " << s.Getcost() << endl;
         for(auto p : GenerateVoisinage(s))
         {
+//        cout << "Inside the loop" << endl;
             if ((p.Getdistance() < s.Getdistance())&&(p.Getcost() < s.Getcost()))
             {
                 p.SetExplored(false);
@@ -285,6 +291,7 @@ void TwoObjectivesInstance::PLS()
         GetUnexplored(best_sols, archive);
     }
 
+    return best_sols;
     //tant que !archive.empty
         //solution s = archive.front
         //voisinage = s.getVoisinage
@@ -301,6 +308,7 @@ void TwoObjectivesInstance::PLS()
 
 vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2)
 {
+//    cout << "2opt" << endl;
     vector<unsigned int> voisine;
     int j = 0;
     for(int i = 0; i < v.size() ; i++)
@@ -319,14 +327,14 @@ vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsig
 
 vector<Solution> TwoObjectivesInstance::GenerateVoisinage(Solution s)
 {
+//    cout << "GenerateVoisinage" << endl;
     vector<Solution> voisinage;
     for(unsigned int i = 0; i < s.GetItineraire().size()-1; ++i)
     {
-        for(unsigned int j = i+1; j < s.GetItineraire().size(); ++i)
+        for(unsigned int j = i+1; j < s.GetItineraire().size(); ++j)
         {
             Solution p;
             p.SetItineraire(twoOpt(s.GetItineraire(), i, j));
-//            TODO : peupler m_itineraire
             sumVilles(p);
             voisinage.push_back(p);
         }
@@ -337,6 +345,7 @@ vector<Solution> TwoObjectivesInstance::GenerateVoisinage(Solution s)
 
 void TwoObjectivesInstance::update(vector<Solution> &best_sols, Solution s)
 {
+//    cout << "update" << endl;
     //Filtrage online
   for (vector<Solution>::iterator i = best_sols.begin() ; i != best_sols.end(); ++i)
   {
@@ -347,12 +356,14 @@ void TwoObjectivesInstance::update(vector<Solution> &best_sols, Solution s)
   }
 
   //On enlève les solutions nouvellement dominées
-  for (vector<Solution>::iterator i = best_sols.begin() ; i != best_sols.end(); ++i)
+  vector<Solution>::iterator i = best_sols.begin();
+  while (i != best_sols.end())
   {
     if((*i).GetOnlineDominated())
     {
         best_sols.erase(i);
     }
+    else ++i;
   }
 
   best_sols.push_back(s);
@@ -361,6 +372,7 @@ void TwoObjectivesInstance::update(vector<Solution> &best_sols, Solution s)
 
 void TwoObjectivesInstance::GetUnexplored(vector<Solution> best_sols, vector<Solution> &archive)
 {
+//    cout << "GetUnexplored" << endl;
     archive.clear();
     for(auto b : best_sols)
     {
@@ -373,6 +385,7 @@ void TwoObjectivesInstance::GetUnexplored(vector<Solution> best_sols, vector<Sol
 
 void TwoObjectivesInstance::sumVilles(Solution &s)
 {
+//    cout << "sumVilles" << endl;
     int a, b;
     double total1 = 0;
     double total2 = 0;

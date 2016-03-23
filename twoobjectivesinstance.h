@@ -16,7 +16,7 @@
     #include <limits>
     #include "solution.h"
 
-    #define SOLUTIONS 500
+    #define SOLUTIONS 5
 
     using namespace std;
 
@@ -77,7 +77,7 @@
             void saveSolutions(string filename);
             void savePareto(string filename, Filtrage filtrage);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
-            void PLS();
+            vector<Solution> PLS();
             vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
             vector<Solution> GenerateVoisinage(Solution s);
             void update(vector<Solution> &best_sols, Solution s);
