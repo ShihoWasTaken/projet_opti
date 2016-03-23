@@ -217,13 +217,15 @@ void TwoObjectivesInstance::offlineFiltering()
 void TwoObjectivesInstance::generateSolution(int iteration)
 {
     unsigned int *itineraire;
+    vector<unsigned int> villes;
     itineraire = this->randomRoute(m_File1Dimension, iteration);
     cout << "L'itinéraire est: " << endl;
-    int a, b;
+    unsigned int a, b;
     double total1 = 0;
     double total2 = 0;
-    for(int i = 0; i < m_File1Dimension; i++)
+    for(unsigned int i = 0; i < m_File1Dimension; i++)
     {
+        villes.push_back(itineraire[i]);
         a = itineraire[i-1];
         b = itineraire[i];
 
@@ -244,6 +246,7 @@ void TwoObjectivesInstance::generateSolution(int iteration)
         }
     }
     this->m_solutions[iteration] = Solution(total1, total2);
+    m_solutions[iteration].SetItineraire(villes);
     cout << "Distance totale: " << total1 << " Km" << endl;
     cout << "Coût total: " << total2 << " €" << endl;
 }
@@ -323,8 +326,8 @@ vector<Solution> TwoObjectivesInstance::GenerateVoisinage(Solution s)
         {
             Solution p;
             p.SetItineraire(twoOpt(s.GetItineraire(), i, j));
-//            p.Setdistance();
-//            p.Setcost();
+//            TODO : peupler m_itineraire
+            sumVilles(p);
             voisinage.push_back(p);
         }
     }
@@ -366,6 +369,36 @@ void TwoObjectivesInstance::GetUnexplored(vector<Solution> best_sols, vector<Sol
             archive.push_back(b);
         }
     }
+}
+
+void TwoObjectivesInstance::sumVilles(Solution &s)
+{
+    int a, b;
+    double total1 = 0;
+    double total2 = 0;
+    for(int i = 0; i < m_File1Dimension; i++)
+    {
+        a = s.GetItineraire()[i-1];
+        b = s.GetItineraire()[i];
+
+        // Toutes les itérations sauf la première et la dernière
+        if( (i!=0) && (i !=(m_File1Dimension-1)) )
+        {
+            //cout << " Ville N°" << a << " => " << "Ville N°" << b << " (" << this->m_File1Matrix[a-1][b-1] << " km," << this->m_File2Matrix[a-1][b-1] << " €)" << endl;
+            total1 += (double) this->m_File1Matrix[a-1][b-1];
+            total2 += (double) this->m_File2Matrix[a-1][b-1];
+        }
+
+        // Dernière itération, on ferme la boucle. On va de la dernière ville jusqu'à la ville de départ
+        if(i == (m_File1Dimension-1))
+        {
+            //cout << " Ville N°" << a << " => " << "Ville N°" << itineraire[0] << " (" << this->m_File1Matrix[a-1][0] << " km," << this->m_File2Matrix[a-1][0] << " €)" << endl;
+            total1 += (double) this->m_File1Matrix[a-1][0];
+            total2 += (double) this->m_File2Matrix[a-1][0];
+        }
+    }
+    s.Setdistance(total1);
+    s.Setcost(total2);
 }
 
 void TwoObjectivesInstance::createApproxFile()

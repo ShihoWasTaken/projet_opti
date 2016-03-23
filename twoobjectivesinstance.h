@@ -82,6 +82,7 @@
             vector<Solution> GenerateVoisinage(Solution s);
             void update(vector<Solution> &best_sols, Solution s);
             void GetUnexplored(vector<Solution> best_sols, vector<Solution> &archive);
+            void sumVilles(Solution &s);
             void createApproxFile();
             void fillApproxFile();
 
