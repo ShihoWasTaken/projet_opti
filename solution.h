@@ -26,7 +26,7 @@
             void SetOnlineDominated(bool val) { m_onlineDominated = val; }
             bool GetOfflineDominated() { return m_offlineDominated; }
             void SetOfflineDominated(bool val) { m_offlineDominated = val; }
-            bool GetExplored() { return m_explored; }
+            bool GetExplored() const { return m_explored; }
             void SetExplored(bool explored) { m_explored = explored; }
             vector<unsigned int> GetItineraire() { return m_itineraire; }
             void SetItineraire(vector<unsigned int> itineraire) { m_itineraire = itineraire; }

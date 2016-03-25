@@ -252,7 +252,7 @@ void TwoObjectivesInstance::generateSolution(int iteration)
 vector<Solution> TwoObjectivesInstance::PLS()
 {
 /* Pareto Local Search */
-
+    bool first = true;
     vector<Solution> best_sols;
     for(unsigned int i = 0; i < SOLUTIONS; ++i)
     {
@@ -261,31 +261,45 @@ vector<Solution> TwoObjectivesInstance::PLS()
     }
 
     bool need_restart = true;
-    while (best_sols.size() < MAX)
+    vector<Solution>::iterator it;
+    while ((best_sols.size() < MAX)||(first))
+//    while (KeepOnExploring(best_sols))
     {
         //S'il y a eu des changements dans best_sols, on le reparcourt depuis le début :
         if(need_restart)
         {
-            vector<Solution>::iterator it = best_sols.begin();
+            it = best_sols.begin();
             need_restart = false;
         }
 
-        unsigned int i = 0;
         //On se positionne sur la première solution non-explorée
-        while(best_sols.at(i).GetExplored()==true) ++i;
-        if(i > best_sols.size()) break;
-//        cout << "Solution courante : " << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
+        while(((*it).GetExplored()==true)&&(it != best_sols.end())) ++it;
+        if(it == best_sols.end()) break;
+        #if SHOW_DEBUGS
+            cout << "Solution courante : " << (*it).Getdistance() << " " << (*it).Getcost() << endl;
+        #endif
         //On parcourt ses voisins
-        for(auto n : GenerateVoisinage(best_sols.at(i)))
+        for(auto n : GenerateVoisinage(*it))
         {
            if(OnlineFilteringForPLS(best_sols, n)) need_restart = true;
         }
 
-        best_sols.at(i).SetExplored(true);
+        (*it).SetExplored(true);
+        if (first) first = false;
     }
     savePLS("PLS500_"+ this->m_Name + ".txt", best_sols);
     return best_sols;
 }
+
+bool TwoObjectivesInstance::KeepOnExploring(vector <Solution> const& best_sols)
+{
+    for(unsigned int i = 0; i < best_sols.size(); ++i)
+    {
+        if(!best_sols.at(i).GetExplored()) return true;
+    }
+    return false;
+}
+
 
 bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, Solution n)
 {
@@ -317,7 +331,11 @@ bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, 
     }
 
     //Si pas comparable
-    if(!changed) best_sols.push_back(n);
+    if(!changed)
+    {
+        best_sols.push_back(n);
+        return false;
+    }
 
     return true;
 }

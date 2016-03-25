@@ -16,9 +16,9 @@
     #include <limits>
     #include "solution.h"
 
-    #define SOLUTIONS 5
+    #define SOLUTIONS 500
     #define MAX 100
-    #define SHOW_DEBUGS 0
+    #define SHOW_DEBUGS 1
 
     using namespace std;
 
@@ -80,6 +80,7 @@
             void savePareto(string filename, Filtrage filtrage);
             void savePLS(string filename, vector<Solution> best_sols);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
+            bool KeepOnExploring(vector <Solution> const &best_sols);
             vector<Solution> PLS();
             bool OnlineFilteringForPLS(vector <Solution> &best_sols, Solution n);
             vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
