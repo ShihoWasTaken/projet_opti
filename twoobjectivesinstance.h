@@ -18,7 +18,7 @@
 
     #define SOLUTIONS 500
     #define MAX 100
-    #define SHOW_DEBUGS 1
+    #define SHOW_DEBUGS 0
 
     using namespace std;
 
@@ -78,8 +78,8 @@
             void onlineFiltering();
             void saveSolutions(string filename);
             void savePareto(string filename, Filtrage filtrage);
-            void savePLS(string filename, vector<Solution> best_sols);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
+            void makePlotForPLS();
             bool KeepOnExploring(vector <Solution> const &best_sols);
             vector<Solution> PLS();
             bool OnlineFilteringForPLS(vector <Solution> &best_sols, Solution n);
@@ -87,7 +87,7 @@
             vector<Solution> GenerateVoisinage(Solution s);
             void sumVilles(Solution &s);
             void createApproxFile();
-            void fillApproxFile();
+            void fillApproxFile(vector <Solution> best_sols, int iteration);
 
             // Attributs
             string m_Name;

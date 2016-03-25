@@ -62,19 +62,13 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     this->createApproxFile();
 
     // On exécute au moins 10 fois
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 2; i++)
     {
         // On remplit un front de Pareto dans le fichier
-        this->fillApproxFile();
+        vector<Solution> best_sols = PLS();
+        this->fillApproxFile(best_sols, i);
     }
-
-    vector<Solution> best_sols = PLS();
-//    cout << "Front optimum :" << endl;
-//    for(unsigned int i = 0; i < best_sols.size(); i++)
-//    {
-//        cout << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
-//    }
-
+    makePlotForPLS();
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -277,7 +271,7 @@ vector<Solution> TwoObjectivesInstance::PLS()
         if(it == best_sols.end()) break;
         #if SHOW_DEBUGS
             cout << "Solution courante : " << (*it).Getdistance() << " " << (*it).Getcost() << endl;
-            cout << "Il y a " << best_sols.size() << " éléments dans best_sols " << endl;
+//            cout << "Il y a " << best_sols.size() << " éléments dans best_sols " << endl;
         #endif
         //On parcourt ses voisins
         for(auto n : GenerateVoisinage(*it))
@@ -288,7 +282,6 @@ vector<Solution> TwoObjectivesInstance::PLS()
         (*it).SetExplored(true);
         iterations++;
     }
-    savePLS("PLS500_"+ this->m_Name + ".txt", best_sols);
     return best_sols;
 }
 
@@ -423,7 +416,7 @@ void TwoObjectivesInstance::createApproxFile()
         }
 }
 
-void TwoObjectivesInstance::fillApproxFile()
+void TwoObjectivesInstance::fillApproxFile(vector<Solution> best_sols, int iteration)
 {
         string filename = "10_Approximations_Pareto_" + this->m_Name + ".txt";
         ofstream fichier(filename, ios::out | ios::app);
@@ -434,9 +427,9 @@ void TwoObjectivesInstance::fillApproxFile()
         }
         else
         {
-            for(int i = 0; i < 5; i++)
+            for(unsigned int i = 0; i < best_sols.size(); i++)
             {
-                fichier << "test ligne n°" << i << endl;
+                fichier << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
             }
             fichier << endl;
             fichier.close();
@@ -525,24 +518,6 @@ void TwoObjectivesInstance::savePareto(string filename, Filtrage filtrage)
         }
 }
 
-void TwoObjectivesInstance::savePLS(string filename, vector<Solution> best_sols)
-{
-    ofstream fichier(filename, ios::out | ios::trunc);
-
-        if(!fichier)
-        {
-            cerr << "Impossible d'ouvrir le fichier !" << endl;
-        }
-        else
-        {
-            for(unsigned int i = 0; i < best_sols.size(); i++)
-            {
-                fichier << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
-            }
-            fichier.close();
-        }
-}
-
 
 void TwoObjectivesInstance::makePlot(string filename, Filtrage filtrage, bool isPareto)
 {
@@ -563,6 +538,20 @@ void TwoObjectivesInstance::makePlot(string filename, Filtrage filtrage, bool is
     gnuplotCommand += "\"";
     system(gnuplotCommand.c_str());
 }
+
+void TwoObjectivesInstance::makePlotForPLS()
+{
+    string filename = "10_Approximations_Pareto_" + this->m_Name;
+    string input = filename + ".txt";
+    string output = filename + ".jpg";
+    string gnuplotCommand = "gnuplot -e \"";
+    gnuplotCommand += "set terminal jpeg;";
+    gnuplotCommand += "set output \\\"" + output + "\\\";";
+    gnuplotCommand += "plot \\\"" + input + "\\\" every ::1::100;";
+    gnuplotCommand += "\"";
+    system(gnuplotCommand.c_str());
+}
+
 
 // Fonction explode pour aider le parsing du fichier
 vector<string> TwoObjectivesInstance::explode(string const & s, char delim)
