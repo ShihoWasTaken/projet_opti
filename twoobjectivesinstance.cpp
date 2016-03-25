@@ -252,7 +252,7 @@ void TwoObjectivesInstance::generateSolution(int iteration)
 vector<Solution> TwoObjectivesInstance::PLS()
 {
 /* Pareto Local Search */
-    bool first = true;
+    unsigned int iterations = 0;
     vector<Solution> best_sols;
     for(unsigned int i = 0; i < SOLUTIONS; ++i)
     {
@@ -262,7 +262,7 @@ vector<Solution> TwoObjectivesInstance::PLS()
 
     bool need_restart = true;
     vector<Solution>::iterator it;
-    while ((best_sols.size() < MAX)||(first))
+    while ((best_sols.size() < MAX)||(iterations < 10))
 //    while (KeepOnExploring(best_sols))
     {
         //S'il y a eu des changements dans best_sols, on le reparcourt depuis le début :
@@ -277,6 +277,7 @@ vector<Solution> TwoObjectivesInstance::PLS()
         if(it == best_sols.end()) break;
         #if SHOW_DEBUGS
             cout << "Solution courante : " << (*it).Getdistance() << " " << (*it).Getcost() << endl;
+            cout << "Il y a " << best_sols.size() << " éléments dans best_sols " << endl;
         #endif
         //On parcourt ses voisins
         for(auto n : GenerateVoisinage(*it))
@@ -285,7 +286,7 @@ vector<Solution> TwoObjectivesInstance::PLS()
         }
 
         (*it).SetExplored(true);
-        if (first) first = false;
+        iterations++;
     }
     savePLS("PLS500_"+ this->m_Name + ".txt", best_sols);
     return best_sols;
