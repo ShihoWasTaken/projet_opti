@@ -4,8 +4,13 @@
 
 using namespace std;
 
+double get_cpu_time(){
+    return (double)clock() / CLOCKS_PER_SEC;
+}
+
 int main()
 {
+    double cpu0  = get_cpu_time();
     // Syntaxe: TwoObjectivesInstance(nom_de_l_instance, nom_fichier_1, nom_fichier_2)
 
     // Pour tester les classes
@@ -24,6 +29,8 @@ int main()
         TwoObjectivesInstance("kroAB200", "kroA200.tsp", "kroB200.tsp")
     };
     */
+    double cpu1  = get_cpu_time();
+    cout << "Temps d'exécution : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)"<< endl;
 
     return EXIT_SUCCESS;
 }

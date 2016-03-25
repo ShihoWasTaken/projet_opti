@@ -17,6 +17,8 @@
     #include "solution.h"
 
     #define SOLUTIONS 5
+    #define MAX 100
+    #define SHOW_DEBUGS 0
 
     using namespace std;
 
@@ -76,12 +78,12 @@
             void onlineFiltering();
             void saveSolutions(string filename);
             void savePareto(string filename, Filtrage filtrage);
+            void savePLS(string filename, vector<Solution> best_sols);
             void makePlot(string filename, Filtrage filtrage, bool isPareto);
             vector<Solution> PLS();
+            bool OnlineFilteringForPLS(vector <Solution> &best_sols, Solution n);
             vector<unsigned int> twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2);
             vector<Solution> GenerateVoisinage(Solution s);
-            void update(vector<Solution> &best_sols, Solution s);
-            void GetUnexplored(vector<Solution> best_sols, vector<Solution> &archive);
             void sumVilles(Solution &s);
             void createApproxFile();
             void fillApproxFile();

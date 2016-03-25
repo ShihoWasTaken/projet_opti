@@ -67,23 +67,14 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         // On remplit un front de Pareto dans le fichier
         this->fillApproxFile();
     }
-//    vector<unsigned int> v = {0,1,2,3,4,5,6,7,8,9,10};
-//    cout << endl;
-//    for(int i = 0; i < v.size(); i++)
-//        cout << v.at(i) << " ";
-//        cout << "Normal" << endl;
-//
-//        vector<unsigned int> voisine = twoOpt(v, 0, 8);
-//        for(int i = 0; i < voisine.size(); i++)
-//        cout << voisine.at(i) << " ";
-//        cout << "Voisinagé" << endl;
 
-    cout << "Front optimum :" << endl;
     vector<Solution> best_sols = PLS();
-    for(unsigned int i = 0; i < best_sols.size(); i++)
-    {
-        cout << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
-    }
+//    cout << "Front optimum :" << endl;
+//    for(unsigned int i = 0; i < best_sols.size(); i++)
+//    {
+//        cout << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
+//    }
+
 }
 
 TwoObjectivesInstance::~TwoObjectivesInstance()
@@ -232,7 +223,6 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     double total2 = 0;
     for(int i = 0; i < m_File1Dimension; i++)
     {
-        unsigned int test = itineraire[i];
         villes.push_back(itineraire[i]);
         a = itineraire[i-1];
         b = itineraire[i];
@@ -261,40 +251,77 @@ void TwoObjectivesInstance::generateSolution(int iteration)
 
 vector<Solution> TwoObjectivesInstance::PLS()
 {
-    vector<Solution> archive; //contient toutes les solutions non-dominées à explorer
-    vector<Solution> best_sols; //set of solutions that are a Pareto local optimum
+/* Pareto Local Search */
 
-    //init archive : toutes les solutions de m_solutions non-dominées
-    for(int i = 0; i < SOLUTIONS; ++i)
+    vector<Solution> best_sols;
+    for(unsigned int i = 0; i < SOLUTIONS; ++i)
     {
-        if(!m_solutions[i].GetOnlineDominated())
-        {
-            m_solutions[i].SetExplored(false);
-            archive.push_back(m_solutions[i]);
-        }
+        m_solutions[i].SetExplored(false);
+        best_sols.push_back(m_solutions[i]);
     }
 
-    best_sols = archive;
-
-    while(!archive.empty())
+    bool need_restart = true;
+    while (best_sols.size() < MAX)
     {
-        Solution s(archive.front());
-        cout << s.Getdistance() << " " << s.Getcost() << endl;
-        for(auto p : GenerateVoisinage(s))
+        //S'il y a eu des changements dans best_sols, on le reparcourt depuis le début :
+        if(need_restart)
         {
-            //Pour chaque voisin p de s, on vérifie si p est meilleure que s
-            if ((p.Getdistance() < s.Getdistance())&&(p.Getcost() < s.Getcost()))
-            {
-                p.SetExplored(false);
-                update(best_sols, p); //on ajoute p à best_sols et on filtre best_sols
-            }
+            vector<Solution>::iterator it = best_sols.begin();
+            need_restart = false;
         }
-        s.SetExplored(true);
-        GetUnexplored(best_sols, archive); //on met à jour l'archive pour ne garder que les solutions non-explorés de best_sols
-    }
 
+        unsigned int i = 0;
+        //On se positionne sur la première solution non-explorée
+        while(best_sols.at(i).GetExplored()==true) ++i;
+        if(i > best_sols.size()) break;
+//        cout << "Solution courante : " << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
+        //On parcourt ses voisins
+        for(auto n : GenerateVoisinage(best_sols.at(i)))
+        {
+           if(OnlineFilteringForPLS(best_sols, n)) need_restart = true;
+        }
+
+        best_sols.at(i).SetExplored(true);
+    }
+    savePLS("PLS500_"+ this->m_Name + ".txt", best_sols);
     return best_sols;
 }
+
+bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, Solution n)
+{
+    bool changed = false;
+    //Filtrage online
+    vector <Solution>::iterator i = best_sols.begin();
+    while(i != best_sols.end())
+    {
+        #if SHOW_DEBUGS
+//            cout << "Voisin courant : " << (*i).Getdistance() << " " << (*i).Getcost() << endl;
+        #endif
+        //Si n est dominée par une solution déjà présente
+        if ((n.Getdistance() > (*i).Getdistance())&&(n.Getcost() > (*i).Getcost()))
+            return false;
+
+        //Si n est meilleure qu'une solution présente
+        if( (n.Getdistance() < (*i).Getdistance()) && (n.Getcost() < (*i).Getcost()) )
+        {
+            if(!changed)
+            {
+                n.SetExplored(false);
+                (*i) = n;
+                changed = true;
+                ++i;
+            }
+            else best_sols.erase(i);
+        }
+        else ++i;
+    }
+
+    //Si pas comparable
+    if(!changed) best_sols.push_back(n);
+
+    return true;
+}
+
 
 vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsigned int index1, unsigned int index2)
 {
@@ -331,49 +358,6 @@ vector<Solution> TwoObjectivesInstance::GenerateVoisinage(Solution s)
     return voisinage;
 }
 
-
-void TwoObjectivesInstance::update(vector<Solution> &best_sols, Solution s)
-{
-/* Supprime toutes les solutions de best_sols dominées par une Solution s */
-
-//cout << "Before erase"<< endl;
-//for(auto k : best_sols)
-//{
-//    cout << k.Getdistance() << " " << k.Getcost() << endl;
-//}
-
-  vector<Solution>::iterator i = best_sols.begin();
-  while (i != best_sols.end())
-  {
-    if(((*i).Getdistance() > s.Getdistance())&&((*i).Getcost() > s.Getcost()))
-    {
-        best_sols.erase(i);
-    }
-    else ++i;
-  }
-
-  best_sols.push_back(s);
-
-//cout << "After erase"<< endl;
-//  for(auto k : best_sols)
-//{
-//    cout << k.Getdistance() << " " << k.Getcost() << endl;
-//}
-
-}
-
-void TwoObjectivesInstance::GetUnexplored(vector<Solution> best_sols, vector<Solution> &archive)
-{
-/* Remplit archive avec toutes les solutions non-explorées de best_sols */
-    archive.clear();
-    for(auto b : best_sols)
-    {
-        if(!b.GetExplored())
-        {
-            archive.push_back(b);
-        }
-    }
-}
 
 void TwoObjectivesInstance::sumVilles(Solution &s)
 {
@@ -521,6 +505,25 @@ void TwoObjectivesInstance::savePareto(string filename, Filtrage filtrage)
             fichier.close();
         }
 }
+
+void TwoObjectivesInstance::savePLS(string filename, vector<Solution> best_sols)
+{
+    ofstream fichier(filename, ios::out | ios::trunc);
+
+        if(!fichier)
+        {
+            cerr << "Impossible d'ouvrir le fichier !" << endl;
+        }
+        else
+        {
+            for(unsigned int i = 0; i < best_sols.size(); i++)
+            {
+                fichier << best_sols.at(i).Getdistance() << " " << best_sols.at(i).Getcost() << endl;
+            }
+            fichier.close();
+        }
+}
+
 
 void TwoObjectivesInstance::makePlot(string filename, Filtrage filtrage, bool isPareto)
 {
