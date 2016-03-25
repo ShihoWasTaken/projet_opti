@@ -72,6 +72,7 @@
             // Fonctions membres privées
             double ** parsingTSPFile(string filename,  unsigned int *dimension);
             vector<string> explode(string const & s, char delim);
+            double get_cpu_time();
             double distanceBetweenCities(int x1, int y1, int x2, int y2);
             void checkDominance(int iterationMax);
             void offlineFiltering();

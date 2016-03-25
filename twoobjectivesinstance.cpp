@@ -62,10 +62,13 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     this->createApproxFile();
 
     // On exécute au moins 10 fois
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 10; i++)
     {
+        double cpu0  = get_cpu_time();
         // On remplit un front de Pareto dans le fichier
         vector<Solution> best_sols = PLS();
+        double cpu1  = get_cpu_time();
+        cout << "Temps d'exécution : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)"<< endl;
         this->fillApproxFile(best_sols, i);
     }
     makePlotForPLS();
@@ -566,3 +569,8 @@ vector<string> TwoObjectivesInstance::explode(string const & s, char delim)
 
     return result;
 }
+
+double TwoObjectivesInstance::get_cpu_time(){
+    return (double)clock() / CLOCKS_PER_SEC;
+}
+
