@@ -68,7 +68,7 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         // On remplit un front de Pareto dans le fichier
         vector<Solution> best_sols = PLS();
         double cpu1  = get_cpu_time();
-        cout << "Temps d'exécution : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)"<< endl;
+        cout << "Temps d'exécution instance " << m_Name << " itération " << i << " : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)"<< endl;
         this->fillApproxFile(best_sols, i);
     }
     makePlotForPLS();
@@ -253,13 +253,16 @@ vector<Solution> TwoObjectivesInstance::PLS()
     vector<Solution> best_sols;
     for(unsigned int i = 0; i < SOLUTIONS; ++i)
     {
-        m_solutions[i].SetExplored(false);
-        best_sols.push_back(m_solutions[i]);
+        if(!m_solutions[i].GetOnlineDominated())
+        {
+            m_solutions[i].SetExplored(false);
+            best_sols.push_back(m_solutions[i]);
+        }
     }
 
     bool need_restart = true;
     vector<Solution>::iterator it;
-    while ((best_sols.size() < MAX)||(iterations < 10))
+    while ((best_sols.size() < MAX))
 //    while (KeepOnExploring(best_sols))
     {
         //S'il y a eu des changements dans best_sols, on le reparcourt depuis le début :
@@ -282,7 +285,7 @@ vector<Solution> TwoObjectivesInstance::PLS()
            if(OnlineFilteringForPLS(best_sols, n)) need_restart = true;
         }
 
-        (*it).SetExplored(true);
+        if(!need_restart) (*it).SetExplored(true);
         iterations++;
     }
     return best_sols;
@@ -328,11 +331,7 @@ bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, 
     }
 
     //Si pas comparable
-    if(!changed)
-    {
-        best_sols.push_back(n);
-        return false;
-    }
+    if(!changed) best_sols.push_back(n);
 
     return true;
 }
