@@ -249,7 +249,6 @@ void TwoObjectivesInstance::generateSolution(int iteration)
 vector<Solution> TwoObjectivesInstance::PLS()
 {
 /* Pareto Local Search */
-    unsigned int iterations = 0;
     vector<Solution> best_sols;
     for(unsigned int i = 0; i < SOLUTIONS; ++i)
     {
@@ -263,7 +262,6 @@ vector<Solution> TwoObjectivesInstance::PLS()
     bool need_restart = true;
     vector<Solution>::iterator it;
     while ((best_sols.size() < MAX))
-//    while (KeepOnExploring(best_sols))
     {
         //S'il y a eu des changements dans best_sols, on le reparcourt depuis le début :
         if(need_restart)
@@ -286,18 +284,8 @@ vector<Solution> TwoObjectivesInstance::PLS()
         }
 
         if(!need_restart) (*it).SetExplored(true);
-        iterations++;
     }
     return best_sols;
-}
-
-bool TwoObjectivesInstance::KeepOnExploring(vector <Solution> const& best_sols)
-{
-    for(unsigned int i = 0; i < best_sols.size(); ++i)
-    {
-        if(!best_sols.at(i).GetExplored()) return true;
-    }
-    return false;
 }
 
 
