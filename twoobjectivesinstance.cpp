@@ -74,7 +74,7 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         // On remplit un front de Pareto dans le fichier
         vector<Solution> best_sols = PLS();
         double cpu1  = get_cpu_time();
-        cout << "Temps d'exécution itération " << i << " : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)" << endl;
+        cout << "Temps d'exécution itération " << i+1 << " : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)" << endl;
         this->fillApproxFile(best_sols, i);
     }
     makePlotForPLS();
@@ -259,6 +259,15 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     #endif // SHOW_DEBUGS
 }
 
+bool TwoObjectivesInstance::KeepOnExploring(vector <Solution> const& best_sols)
+{
+    for(unsigned int i = 0; i < best_sols.size(); ++i)
+    {
+        if(!best_sols.at(i).GetExplored()) return true;
+    }
+    return false;
+}
+
 vector<Solution> TwoObjectivesInstance::PLS()
 {
 /* Pareto Local Search */
@@ -275,6 +284,7 @@ vector<Solution> TwoObjectivesInstance::PLS()
     bool need_restart = true;
     vector<Solution>::iterator it;
     while ((best_sols.size() < MAX))
+//    while (KeepOnExploring(best_sols))
     {
         //S'il y a eu des changements dans best_sols, on le reparcourt depuis le début :
         if(need_restart)
@@ -314,7 +324,8 @@ bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, 
         //Si n est dominée par une solution déjà présente
         if ((n.Getdistance() > (*i).Getdistance())&&(n.Getcost() > (*i).Getcost()))
             return false;
-
+//        if ((n.Getdistance() == (*i).Getdistance())&&(n.Getcost() == (*i).Getcost()))
+//            return false;
         //Si n est meilleure qu'une solution présente
         if( (n.Getdistance() < (*i).Getdistance()) && (n.Getcost() < (*i).Getcost()) )
         {
@@ -331,7 +342,11 @@ bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, 
     }
 
     //Si pas comparable
-    if(!changed) best_sols.push_back(n);
+    if(!changed)
+    {
+        n.SetExplored(false);
+        best_sols.push_back(n);
+    }
 
     return true;
 }
@@ -549,7 +564,7 @@ void TwoObjectivesInstance::makePlotForPLS()
     string gnuplotCommand = "gnuplot -e \"";
     gnuplotCommand += "set terminal jpeg;";
     gnuplotCommand += "set output \\\"" + output + "\\\";";
-    gnuplotCommand += "plot \\\"" + input + "\\\" every ::1::100;";
+    gnuplotCommand += "plot \\\"" + input + "\\\" every ::1::50;";
     gnuplotCommand += "\"";
     system(gnuplotCommand.c_str());
 }
