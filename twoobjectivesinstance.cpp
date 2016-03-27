@@ -32,7 +32,9 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     // On génère 500 solutions
     for(int i = 0; i < SOLUTIONS; i++)
     {
+        #if SHOW_DEBUGS
         cout << endl << "Solution N°" << i+1 << endl;
+        #endif // SHOW_DEBUGS
         this->generateSolution(i);
     }
 
@@ -43,6 +45,7 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     this->offlineFiltering();
 
     // On affiche les 500 solutions
+    #if SHOW_DEBUGS
     for(int i = 0; i < SOLUTIONS; i++)
     {
         cout << endl << "Solution N°" << i+1 << endl;
@@ -50,6 +53,8 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
         cout << "Dominée online: " << this->m_solutions[i].GetOnlineDominated() << endl;
         cout << "Dominée offline: " << this->m_solutions[i].GetOfflineDominated() << endl;
     }
+    #endif // SHOW_DEBUGS
+
     // On crée un graphique sur gnuplot avec toutes les solutions
     this->makePlot(this->m_Name, OFFLINE, false);
     this->makePlot(this->m_Name, ONLINE, false);
@@ -62,13 +67,14 @@ TwoObjectivesInstance::TwoObjectivesInstance(string name, string filename1, stri
     this->createApproxFile();
 
     // On exécute au moins 10 fois
+    cout << "Approximations du front de Pareto pour l'instance " << m_Name << endl;
     for(int i = 0; i < 10; i++)
     {
         double cpu0  = get_cpu_time();
         // On remplit un front de Pareto dans le fichier
         vector<Solution> best_sols = PLS();
         double cpu1  = get_cpu_time();
-        cout << "Temps d'exécution instance " << m_Name << " itération " << i << " : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)"<< endl;
+        cout << "Temps d'exécution itération " << i << " : " << (int)( (cpu1  - cpu0) * 1000) << " milliseconds (CPU time)" << endl;
         this->fillApproxFile(best_sols, i);
     }
     makePlotForPLS();
@@ -174,7 +180,10 @@ void TwoObjectivesInstance::onlineFiltering()
 {
     for(int i = 0; i < SOLUTIONS; i++)
     {
+        #if SHOW_DEBUGS
         cout << endl << "Solution N°" << i+1 << endl;
+        #endif // SHOW_DEBUGS
+
         for(int j = 0; j <= i; j++)
         {
             if( (m_solutions[i].Getdistance() < m_solutions[j].Getdistance()) && (m_solutions[i].Getcost() < m_solutions[j].Getcost()) )
@@ -214,7 +223,9 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     unsigned int *itineraire;
     vector<unsigned int> villes;
     itineraire = this->randomRoute(m_File1Dimension, iteration);
+    #if SHOW_DEBUGS
     cout << "L'itinéraire est: " << endl;
+    #endif // SHOW_DEBUGS
     int a, b;
     double total1 = 0;
     double total2 = 0;
@@ -242,8 +253,10 @@ void TwoObjectivesInstance::generateSolution(int iteration)
     }
     this->m_solutions[iteration] = Solution(total1, total2);
     m_solutions[iteration].SetItineraire(villes);
+    #if SHOW_DEBUGS
     cout << "Distance totale: " << total1 << " Km" << endl;
     cout << "Coût total: " << total2 << " €" << endl;
+    #endif // SHOW_DEBUGS
 }
 
 vector<Solution> TwoObjectivesInstance::PLS()
@@ -288,7 +301,6 @@ vector<Solution> TwoObjectivesInstance::PLS()
     return best_sols;
 }
 
-
 bool TwoObjectivesInstance::OnlineFilteringForPLS(vector <Solution>& best_sols, Solution n)
 {
     bool changed = false;
@@ -329,7 +341,7 @@ vector<unsigned int> TwoObjectivesInstance::twoOpt(vector<unsigned int> v, unsig
 {
     vector<unsigned int> voisine;
     int j = 0;
-    for(int i = 0; i < v.size() ; i++)
+    for(unsigned int i = 0; i < v.size() ; i++)
     {
         if( !(i < index1) && !(i > index2) )
         {
